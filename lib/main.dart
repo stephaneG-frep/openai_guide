@@ -10,6 +10,7 @@ import 'screens/manual_screen.dart';
 import 'screens/quiz_screen.dart';
 import 'screens/coach_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/ai_agents_screen.dart';
 
 void main() {
   runApp(const OpenAIGuideApp());
@@ -122,6 +123,7 @@ class _AppShellState extends State<AppShell> {
     NavigationDestination(icon: Icon(Icons.quiz_outlined), label: 'Quiz'),
     NavigationDestination(icon: Icon(Icons.smart_toy_outlined), label: 'Coach'),
     NavigationDestination(icon: Icon(Icons.settings_outlined), label: 'Parametres'),
+    NavigationDestination(icon: Icon(Icons.hub_outlined), label: 'IA & Agents'),
   ];
 
   String get _title {
@@ -131,6 +133,7 @@ class _AppShellState extends State<AppShell> {
       case 2: return 'Quiz IA';
       case 3: return 'Coach Prompts';
       case 4: return 'Parametres';
+      case 5: return 'IA & Agents';
       default: return 'Notice IA';
     }
   }
@@ -175,6 +178,8 @@ class _AppShellState extends State<AppShell> {
           onSaveOpenAiSettings: _saveOpenAiSettings,
           onResetProgress: _resetProgress,
         );
+      case 5:
+        return const AiAgentsScreen();
       default:
         return const SizedBox();
     }
@@ -196,11 +201,12 @@ class _AppShellState extends State<AppShell> {
       builder: (ctx, theme, child) => Scaffold(
         backgroundColor: ctx.surfaceBg,
         appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
           title: Text(_title),
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: ctx.headerGradient,
+                colors: ctx.heroGradient,
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -208,12 +214,133 @@ class _AppShellState extends State<AppShell> {
           ),
           backgroundColor: Colors.transparent,
         ),
+        drawer: _buildDrawer(ctx),
         body: _buildScreen(),
         bottomNavigationBar: NavigationBar(
           selectedIndex: _currentIndex,
           onDestinationSelected: (i) => setState(() => _currentIndex = i),
           destinations: _navItems,
         ),
+      ),
+    );
+  }
+
+  static const _drawerItems = [
+    (Icons.home_outlined,       'Accueil'),
+    (Icons.menu_book_outlined,  'Manuel'),
+    (Icons.quiz_outlined,       'Quiz'),
+    (Icons.smart_toy_outlined,  'Coach'),
+    (Icons.settings_outlined,   'Paramètres'),
+    (Icons.hub_outlined,        'IA & Agents'),
+  ];
+
+  Widget _buildDrawer(BuildContext ctx) {
+    return Drawer(
+      backgroundColor: ctx.cardBg,
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: ctx.heroGradient,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/mon_logo.jpeg',
+                        width: 110,
+                        height: 170,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    const Text(
+                      'Notice IA',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Guide complet OpenAI',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.75),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              itemCount: _drawerItems.length,
+              itemBuilder: (context, index) {
+                final (icon, label) = _drawerItems[index];
+                final isSelected = _currentIndex == index;
+                final color = ctx.palette[index % ctx.palette.length];
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isSelected ? color.withValues(alpha: 0.2) : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ListTile(
+                    leading: Icon(icon,
+                        color: isSelected ? color : color.withValues(alpha: 0.5)),
+                    title: Text(
+                      label,
+                      style: TextStyle(
+                        color: isSelected ? color : ctx.onSurface.withValues(alpha: 0.6),
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                    ),
+                    trailing: isSelected
+                        ? Container(
+                            width: 4,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          )
+                        : null,
+                    onTap: () {
+                      setState(() => _currentIndex = index);
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+          Divider(color: ctx.steel, height: 1),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'v1.0 • OpenAI / Notice IA',
+                style: TextStyle(color: ctx.accentMid.withValues(alpha: 0.6), fontSize: 12),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
