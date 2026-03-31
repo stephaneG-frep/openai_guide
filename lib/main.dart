@@ -27,6 +27,17 @@ class OpenAIGuideApp extends StatelessWidget {
           title: 'Notice IA',
           debugShowCheckedModeBanner: false,
           theme: buildMaterialTheme(theme),
+          builder: (context, child) {
+            if (theme == AppTheme.nokia) {
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: const TextScaler.linear(1.12),
+                ),
+                child: child!,
+              );
+            }
+            return child!;
+          },
           home: const AppShell(),
         );
       },

@@ -119,12 +119,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _card(context, [
             _title(context, 'Theme'),
             Row(children: [
-              Expanded(
-                  child: _themeBtn(context, 'Vert / Orange', AppTheme.greenOrange)),
+              Expanded(child: _themeBtn(context, 'Vert / Orange', AppTheme.greenOrange)),
               const SizedBox(width: 8),
-              Expanded(
-                  child: _themeBtn(context, 'Rouge / Bleu', AppTheme.redBlue)),
+              Expanded(child: _themeBtn(context, 'Rouge / Bleu', AppTheme.redBlue)),
             ]),
+            _themeBtn(context, 'Nokia — Bleu marine', AppTheme.nokia),
           ]),
         ],
       ),
